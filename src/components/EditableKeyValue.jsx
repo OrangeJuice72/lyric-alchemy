@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import LockButton from './LockButton';
+import ToggleButton from './ToggleButton';
 
-const EditableKeyValue = ({ label, value, lockKey, locks, toggleLock, onEditSave, customClass = "" }) => {
+const EditableKeyValue = ({ label, value, lockKey, locks, toggleLock, isEnabled = true, toggleEnable, onEditSave, customClass = "" }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [tempVal, setTempVal] = useState(value);
 
@@ -17,10 +18,13 @@ const EditableKeyValue = ({ label, value, lockKey, locks, toggleLock, onEditSave
     const rows = (tempVal || "").split('\n').length || 1;
 
     return (
-        <div className={`kv ${locks[lockKey] ? 'locked' : ''} ${customClass}`}>
+        <div className={`kv ${locks[lockKey] ? 'locked' : ''} ${isEnabled === false ? 'disabled' : ''} ${customClass}`}>
             <div className="k">
                 {label}
-                <LockButton isLocked={locks[lockKey]} onToggle={() => toggleLock(lockKey)} />
+                <div style={{ display: 'flex', gap: '4px' }}>
+                    <ToggleButton isEnabled={isEnabled !== false} onToggle={() => toggleEnable && toggleEnable(lockKey)} />
+                    <LockButton isLocked={locks[lockKey]} onToggle={() => toggleLock(lockKey)} />
+                </div>
             </div>
             {isEditing ? (
                 <textarea

@@ -8,6 +8,7 @@ import { makeRng, pick, generateMusic } from './utils/rng';
 import EditableKeyValue from './components/EditableKeyValue';
 import EditableStep from './components/EditableStep';
 import LockButton from './components/LockButton';
+import ToggleButton from './components/ToggleButton';
 
 const App = () => {
   const [seedInput, setSeedInput] = useState("");
@@ -22,7 +23,14 @@ const App = () => {
     twist: false, constraint: false, structure: false
   });
 
+  const [enabled, setEnabled] = useState({
+    title: true, genres: true, music: true, inst: true, topic: true, pov: true, emotion: true,
+    imagery: true, rhyme: true, vocal: true, cadence: true,
+    twist: true, constraint: true, structure: true
+  });
+
   const toggleLock = (key) => setLocks(prev => ({ ...prev, [key]: !prev[key] }));
+  const toggleEnable = (key) => setEnabled(prev => ({ ...prev, [key]: !prev[key] }));
 
   const showToast = (msg) => {
     setToastMsg({ text: msg, visible: true });
@@ -133,7 +141,13 @@ const App = () => {
 
   const handleExport = () => {
     if (!currentBp) return showToast("Generate first! 🎲");
-    const blob = new Blob([JSON.stringify(currentBp, null, 2)], { type: "application/json" });
+    const exportData = {};
+    Object.keys(currentBp).forEach(key => {
+      if (enabled[key] !== false) {
+        exportData[key] = currentBp[key];
+      }
+    });
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -193,50 +207,53 @@ const App = () => {
               <div className="blueprint-section" style={{ borderColor: 'var(--accent-purple)', background: 'rgba(179,140,255,0.05)' }}>
                 <h3 style={{ color: 'var(--text)' }}>🏷️ The Blueprint Identity</h3>
                 <div className="kv-grid">
-                  <EditableKeyValue label="Working Title" value={getVal('title', currentBp.title)} lockKey="title" locks={locks} toggleLock={toggleLock} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Working Title" value={getVal('title', currentBp.title)} lockKey="title" locks={locks} toggleLock={toggleLock} isEnabled={enabled.title} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                 </div>
               </div>
 
               <div className="blueprint-section">
                 <h3>🌌 The Vibe</h3>
                 <div className="kv-grid">
-                  <EditableKeyValue label="Genres" value={getVal('genres', `${currentBp.genres.primary} + ${currentBp.genres.secondary} (Flavor)`)} lockKey="genres" locks={locks} toggleLock={toggleLock} onEditSave={handleOverrideSave} />
-                  <EditableKeyValue label="BPM, Key & Scale" value={getVal('music', currentBp.music)} lockKey="music" locks={locks} toggleLock={toggleLock} onEditSave={handleOverrideSave} />
-                  <EditableKeyValue label="Instrumentation Palette" value={getVal('inst', currentBp.inst)} lockKey="inst" locks={locks} toggleLock={toggleLock} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Genres" value={getVal('genres', `${currentBp.genres.primary} + ${currentBp.genres.secondary} (Flavor)`)} lockKey="genres" locks={locks} toggleLock={toggleLock} isEnabled={enabled.genres} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="BPM, Key & Scale" value={getVal('music', currentBp.music)} lockKey="music" locks={locks} toggleLock={toggleLock} isEnabled={enabled.music} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Instrumentation Palette" value={getVal('inst', currentBp.inst)} lockKey="inst" locks={locks} toggleLock={toggleLock} isEnabled={enabled.inst} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                 </div>
               </div>
 
               <div className="blueprint-section">
                 <h3>🫀 The Core</h3>
                 <div className="kv-grid">
-                  <EditableKeyValue label="Topic" value={getVal('topic', currentBp.topic)} lockKey="topic" locks={locks} toggleLock={toggleLock} onEditSave={handleOverrideSave} />
-                  <EditableKeyValue label="Narrative POV" value={getVal('pov', currentBp.pov)} lockKey="pov" locks={locks} toggleLock={toggleLock} onEditSave={handleOverrideSave} />
-                  <EditableKeyValue label="Emotion (Surface / Core)" value={getVal('emotion', `${currentBp.emotion.surface} / ${currentBp.emotion.core}`)} lockKey="emotion" locks={locks} toggleLock={toggleLock} onEditSave={handleOverrideSave} />
-                  <EditableKeyValue label="Imagery Theme" value={getVal('imagery', currentBp.imagery)} lockKey="imagery" locks={locks} toggleLock={toggleLock} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Topic" value={getVal('topic', currentBp.topic)} lockKey="topic" locks={locks} toggleLock={toggleLock} isEnabled={enabled.topic} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Narrative POV" value={getVal('pov', currentBp.pov)} lockKey="pov" locks={locks} toggleLock={toggleLock} isEnabled={enabled.pov} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Emotion (Surface / Core)" value={getVal('emotion', `${currentBp.emotion.surface} / ${currentBp.emotion.core}`)} lockKey="emotion" locks={locks} toggleLock={toggleLock} isEnabled={enabled.emotion} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Imagery Theme" value={getVal('imagery', currentBp.imagery)} lockKey="imagery" locks={locks} toggleLock={toggleLock} isEnabled={enabled.imagery} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                 </div>
               </div>
 
               <div className="blueprint-section">
                 <h3>🗣️ The Voice</h3>
                 <div className="kv-grid">
-                  <EditableKeyValue label="Rhyme & Diction" value={getVal('rhyme', currentBp.rhyme)} lockKey="rhyme" locks={locks} toggleLock={toggleLock} onEditSave={handleOverrideSave} />
-                  <EditableKeyValue label="Vocal Tone" value={getVal('vocal', `${currentBp.vocal.name}\nVerse: ${currentBp.vocal.verse}\nChorus: ${currentBp.vocal.chorus}\nBridge: ${currentBp.vocal.bridge}`)} lockKey="vocal" locks={locks} toggleLock={toggleLock} onEditSave={handleOverrideSave} />
-                  <EditableKeyValue label="Flow & Cadence" value={getVal('cadence', currentBp.cadence)} lockKey="cadence" locks={locks} toggleLock={toggleLock} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Rhyme & Diction" value={getVal('rhyme', currentBp.rhyme)} lockKey="rhyme" locks={locks} toggleLock={toggleLock} isEnabled={enabled.rhyme} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Vocal Tone" value={getVal('vocal', `${currentBp.vocal.name}\nVerse: ${currentBp.vocal.verse}\nChorus: ${currentBp.vocal.chorus}\nBridge: ${currentBp.vocal.bridge}`)} lockKey="vocal" locks={locks} toggleLock={toggleLock} isEnabled={enabled.vocal} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Flow & Cadence" value={getVal('cadence', currentBp.cadence)} lockKey="cadence" locks={locks} toggleLock={toggleLock} isEnabled={enabled.cadence} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                 </div>
               </div>
 
               <div className="blueprint-section">
                 <h3>🃏 The Curveball & Constraints</h3>
                 <div className="kv-grid">
-                  <EditableKeyValue label="Plot Twist" value={getVal('twist', currentBp.twist)} lockKey="twist" locks={locks} toggleLock={toggleLock} onEditSave={handleOverrideSave} />
-                  <EditableKeyValue label="Forbidden Words" value={getVal('constraint', currentBp.constraint)} lockKey="constraint" locks={locks} toggleLock={toggleLock} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Plot Twist" value={getVal('twist', currentBp.twist)} lockKey="twist" locks={locks} toggleLock={toggleLock} isEnabled={enabled.twist} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Forbidden Words" value={getVal('constraint', currentBp.constraint)} lockKey="constraint" locks={locks} toggleLock={toggleLock} isEnabled={enabled.constraint} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                 </div>
               </div>
 
-              <div className={`blueprint-section ${locks.structure ? 'locked' : ''}`}>
-                <h3>
-                  🏗️ The Structure: {currentBp.structure.name}
-                  <LockButton isLocked={locks.structure} onToggle={() => toggleLock('structure')} />
+              <div className={`blueprint-section ${locks.structure ? 'locked' : ''} ${!enabled.structure ? 'disabled' : ''}`}>
+                <h3 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>🏗️ The Structure: {currentBp.structure.name}</span>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <ToggleButton isEnabled={enabled.structure} onToggle={() => toggleEnable('structure')} />
+                    <LockButton isLocked={locks.structure} onToggle={() => toggleLock('structure')} />
+                  </div>
                 </h3>
                 <div className="structure-list">
                   {currentBp.structure.steps.map((step, i) => (

@@ -316,6 +316,14 @@ textarea.v {
   background: rgba(255, 211, 122, 0.03);
 }
 
+.kv.disabled .v {
+  opacity: 0.4;
+  text-decoration: line-through;
+  text-decoration-color: var(--danger);
+  border-color: rgba(255, 107, 136, 0.2);
+  background: transparent;
+}
+
 .lock-btn {
   background: none;
   border: none;
@@ -401,6 +409,11 @@ textarea.step-desc {
 
 .blueprint-section.locked .step {
   border-color: rgba(255, 211, 122, 0.3);
+}
+
+.blueprint-section.disabled .step {
+  opacity: 0.4;
+  border-color: rgba(255, 107, 136, 0.2);
 }
 
 .saved-list {
