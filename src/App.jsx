@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   GENRES, TOPICS, POVS, EMOTIONS, IMAGERY, RHYME,
   VOCAL_ARCHETYPES, CADENCES, TWISTS, FORBIDDEN,
@@ -202,7 +203,14 @@ const App = () => {
           </div>
 
           {currentBp && (
-            <div className="card-bd" style={{ paddingTop: 0 }}>
+            <motion.div
+              className="card-bd"
+              style={{ paddingTop: 0 }}
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              key={currentBp.seed} // Forces re-animation on new generate
+            >
 
               <div className="blueprint-section" style={{ borderColor: 'var(--accent-purple)', background: 'rgba(179,140,255,0.05)' }}>
                 <h3 style={{ color: 'var(--text)' }}>🏷️ The Blueprint Identity</h3>
@@ -261,7 +269,7 @@ const App = () => {
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
         </section>
 
@@ -274,23 +282,41 @@ const App = () => {
             {saves.length === 0 ? (
               <p style={{ color: "var(--muted)", fontSize: "14px" }}>Nothing saved yet.</p>
             ) : (
-              <div className="saved-list">
-                {saves.map((bp, i) => {
-                  const title = (bp.overrides && bp.overrides.title) ? bp.overrides.title : bp.title;
-                  return (
-                    <div key={i} className="fav">
-                      <div className="fav-title" style={{ color: 'var(--accent-gold)' }}>{title}</div>
-                      <div className="fav-meta">
-                        <span>{bp.genres.primary} / {bp.genres.secondary}</span><br />
-                        <span>Seed: {bp.seed}</span>
-                      </div>
-                      <div className="fav-actions">
-                        <button className="small" onClick={() => handleLoad(bp)}>📥 Load</button>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
+              <motion.div
+                className="saved-list"
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  hidden: { opacity: 0 },
+                  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+                }}
+              >
+                <AnimatePresence>
+                  {saves.map((bp, i) => {
+                    const title = (bp.overrides && bp.overrides.title) ? bp.overrides.title : bp.title;
+                    return (
+                      <motion.div
+                        key={bp.seed + i}
+                        className="fav"
+                        variants={{
+                          hidden: { opacity: 0, x: 20 },
+                          visible: { opacity: 1, x: 0 }
+                        }}
+                        exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                        layout
+                      >
+                        <div className="fav-title" style={{ color: 'var(--accent-gold)' }}>{title}</div>
+                        <div className="fav-meta">
+                          <span>{bp.genres.primary} / {bp.genres.secondary}</span><br />
+                          <span>Seed: {bp.seed}</span>
+                        </div>
+                        <div className="fav-actions">
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </AnimatePresence>
+              </motion.div>
             )}
           </div>
         </aside>

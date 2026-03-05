@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import LockButton from './LockButton';
 import ToggleButton from './ToggleButton';
 
@@ -18,24 +19,25 @@ const EditableKeyValue = ({ label, value, lockKey, locks, toggleLock, isEnabled 
     const rows = (tempVal || "").split('\n').length || 1;
 
     return (
-        <div className={`kv ${locks[lockKey] ? 'locked' : ''} ${isEnabled === false ? 'disabled' : ''} ${customClass}`}>
-            <div className="k">
+        <motion.div layout className={`kv ${locks[lockKey] ? 'locked' : ''} ${isEnabled === false ? 'disabled' : ''} ${customClass}`}>
+            <motion.div layout="position" className="k">
                 {label}
                 <div style={{ display: 'flex', gap: '4px' }}>
                     <ToggleButton isEnabled={isEnabled !== false} onToggle={() => toggleEnable && toggleEnable(lockKey)} />
                     <LockButton isLocked={locks[lockKey]} onToggle={() => toggleLock(lockKey)} />
                 </div>
-            </div>
+            </motion.div>
             {isEditing ? (
-                <textarea
+                <motion.textarea
+                    layout
                     autoFocus className="v" value={tempVal}
                     onChange={(e) => setTempVal(e.target.value)} onBlur={handleBlur}
                     rows={rows}
                 />
             ) : (
-                <div className="v editable" onClick={() => setIsEditing(true)} title="Click to edit! ✏️">{value}</div>
+                <motion.div layout="position" className="v editable" onClick={() => setIsEditing(true)} title="Click to edit! ✏️">{value}</motion.div>
             )}
-        </div>
+        </motion.div>
     );
 };
 
