@@ -26,10 +26,55 @@ export const STRUCTURES = [
 ];
 
 export const POVS = ["The Direct Confession (First Person: I/You)", "The Storyteller (Third Person: He/She/They)", "The Unreliable Narrator (Lying to the listener/themselves)", "The Inner Monologue (Talking strictly to yourself)", "The Ghost (Singing from beyond the relationship or life)", "The Accuser (Second Person: Dictating exactly what they did)", "The Fly on the Wall (Detached, clinical, emotionless observation)"];
-export const CADENCES = ["Fast, triplet-heavy rhythmic flow", "Conversational, dragging slightly behind the beat", "Long, sweeping, theatrical legato notes", "Staccato, punchy, and aggressive", "Slightly slurred, drunken, or exhausted delivery", "Crisp, fast-paced enunciation", "Breathless and rushed, like running out of time", "Soulful, heavy melismatic runs", "Deadpan, spoken-word style", "Soft, breathy, ASMR-like close proximity"];
-export const TWISTS = ["The beat completely drops out for the first half of verse 2", "The perspective flips entirely to the villain in the bridge", "Sudden tempo shift to half-time", "Modulate up a minor third for the final massive chorus", "A stark acoustic breakdown right after the climax", "The final hook is whispered instead of belted", "A massive, unexpected genre switch for the bridge", "The lyrics suddenly break the fourth wall and speak to the audience", "Introduce a completely new melody and chord progression in the outro", "The chorus lyrics completely change meaning the final time they are sung", "All instruments drop out leaving a 4-part acappella harmony", "A screeching, dissonant synth/guitar solo interrupts a soft moment"];
-export const EMOTIONS = ["Nostalgia", "Hope", "Resentment", "Longing", "Confidence", "Guilt", "Yearning", "Relief", "Regret", "Defiance", "Tenderness", "Jealousy", "Awe", "Grief", "Calm", "Restlessness"];
-export const RHYME = ["Simple end rhymes, conversational diction", "Slant rhymes, modern phrasing, internal echoes", "Sparse rhymes, vivid imagery, punchy lines", "Dense internal rhymes, rhythmic wordplay", "No-rhyme free verse but with strong cadence", "Call-and-response phrasing, hook-forward repetition"];
+export const DELIVERIES = [
+  "Fast, triplet-heavy rhythmic flow with simple end rhymes",
+  "Conversational, dragging slightly behind the beat with slant rhymes",
+  "Long, sweeping, theatrical legato notes with vivid imagery",
+  "Staccato, punchy, aggressive delivery with dense internal rhymes",
+  "Slightly slurred, exhausted delivery with sparse rhymes",
+  "Crisp, fast-paced enunciation with rhythmic wordplay",
+  "Breathless and rushed, like running out of time, no-rhyme free verse",
+  "Soulful, heavy melismatic runs with call-and-response phrasing",
+  "Deadpan, spoken-word style with sharp modern phrasing",
+  "Soft, breathy, close proximity delivery with internal echoes"
+];
+export const EMOTIONS = ["Nostalgia", "Hope", "Resentment", "Longing", "Confidence", "Guilt", "Yearning", "Relief", "Regret", "Defiance", "Tenderness", "Jealousy", "Awe", "Grief", "Calm", "Restlessness", "Bittersweet", "Euphoria", "Paranoia", "Acceptance"];
+export const PREMISES = [
+  "A breakup song that sounds like a massive celebration",
+  "A song about realizing you are the villain of the story",
+  "A love song for a city you're leaving permanently",
+  "A track about the terrifying freedom of failing entirely",
+  "An upbeat dance anthem with devastatingly sad lyrics",
+  "A slow, romantic ballad about someone you haven't met yet",
+  "A confrontational track aimed directly at your past self",
+  "A song about staying in a comfortable but dead relationship",
+  "An ode to midnight drives to avoid going home",
+  "A track detailing the specific grief of outgrowing your best friend"
+];
+export const EAR_CANDIES = [
+  "A heavily distorted 808 bass slide",
+  "A pitched-down, slowed vocal sample in the chorus",
+  "A sweeping, cinematic cello solo in the bridge",
+  "A hyper-compressed, punchy acoustic drum break",
+  "A glitched-out, stuttering synthesizer lead",
+  "A massive, gated-reverb 80s snare drum",
+  "A lo-fi, crackling vinyl atmosphere underlying the whole track",
+  "A sudden, completely dry vocal with all instruments dropping out",
+  "A melodic, high-register walking bassline",
+  "A shimmering, wide-panned acoustic guitar stereo track"
+];
+export const ENERGY_CONTOURS = [
+  "A slow burn that explodes only in the final chorus",
+  "Relentless, driving energy from start to finish",
+  "Starts massive, drops to a whisper, ends in chaotic noise",
+  "A steady, hypnotic groove that slowly adds layers",
+  "Quiet verses with sudden, jarringly loud choruses",
+  "Rolling waves of intensity that build and recede cyclically",
+  "High energy up until a stark, stripped-back bare acoustic bridge",
+  "A constantly accelerating tempo that reaches a frantic peak",
+  "A flat, stoic, unchanging groove that relies on lyrical tension",
+  "A chaotic, unpredictable structure jumping between loud and soft"
+];
 export const VOCAL_ARCHETYPES = [{ name: "The Confessor", verse: "close-mic, intimate, restrained", chorus: "open tone, warm lift", bridge: "nearly spoken, vulnerable" }, { name: "The Rebel", verse: "gritty, forward, rhythmic phrasing", chorus: "bigger edge, punch consonants", bridge: "half-sung grit, tension" }, { name: "The Dreamer", verse: "airy, soft, floating vowels", chorus: "soaring, layered harmonies", bridge: "breathy clarity, emotional crack" }, { name: "The Villain", verse: "low and controlled, theatrical", chorus: "dramatic lift, sharp dynamics", bridge: "cold whisper → sudden snap" }, { name: "The Storyteller", verse: "clear articulation, narrative drive", chorus: "anthemic, singalong", bridge: "pause-heavy, honest delivery" }];
 
 export const INST = ["Fuzzy analog synths, tight 808s, and a heavily distorted vocal sample", "Nylon string acoustic, brush drums, and a sweeping cello", "Washed-out shoegaze guitars, driving bass, and buried vocals", "Crisp piano, soaring strings, and a massive sub-bass", "Lo-fi drum break, jazzy Rhodes piano, and vinyl crackle", "Down-tuned 8-string guitars, blast beats, and a guttural synth line", "Upright bass, muted trumpet, and soft finger-snaps", "Massive supersaw synths, four-on-the-floor kick, and sidechained pads", "Clean Stratocaster, groovy bassline, and tight funk drums", "Mellotron flutes, 12-string acoustic, and tambourine", "Gritty distorted bass, trap hi-hats, and eerie music-box bells", "Reverb-drenched slide guitar, slow heavy kick, and distant vocal hums", "8-bit chiptune leads, glitchy percussion, and a vocoder", "Fuzzy bass, garage rock drums, and gang vocals", "Lush orchestral harp, glockenspiel, and deep timpani rolls"];

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  CORE_GENRES, FLAVORS, POVS, EMOTIONS, RHYME,
-  VOCAL_ARCHETYPES, CADENCES, TWISTS,
+  CORE_GENRES, FLAVORS, POVS, EMOTIONS,
+  PREMISES, EAR_CANDIES, ENERGY_CONTOURS, DELIVERIES,
+  VOCAL_ARCHETYPES, TWISTS,
   STRUCTURES, TITLE_ADJ, TITLE_NOUNS, INST
 } from './utils/constants';
 import { makeRng, pick, generateMusic } from './utils/rng';
@@ -19,14 +20,14 @@ const App = () => {
   const [toastMsg, setToastMsg] = useState({ text: "", visible: false });
 
   const [locks, setLocks] = useState({
-    title: false, genre: false, flavor: false, music: false, inst: false, pov: false, emotion: false,
-    rhyme: false, vocal: false, cadence: false,
+    title: false, premise: false, genre: false, flavor: false, music: false, inst: false, earCandy: false, pov: false, vibe: false, energy: false,
+    delivery: false, vocal: false,
     twist: false, structure: false
   });
 
   const [enabled, setEnabled] = useState({
-    title: true, genre: true, flavor: true, music: true, inst: true, pov: true, emotion: true,
-    rhyme: true, vocal: true, cadence: true,
+    title: true, premise: true, genre: true, flavor: true, music: true, inst: true, earCandy: true, pov: true, vibe: true, energy: true,
+    delivery: true, vocal: true,
     twist: true, structure: true
   });
 
@@ -81,13 +82,6 @@ const App = () => {
     let primaryGenre = pick(rng, CORE_GENRES);
     let secondaryGenre = isCohesive ? pick(rng, safeFlavors) : pick(rng, FLAVORS);
 
-    const curatedEmotionPairs = [["Confidence", "Insecurity"], ["Nostalgia", "Resentment"], ["Hope", "Fear"], ["Relief", "Grief"], ["Tenderness", "Jealousy"], ["Calm", "Restlessness"], ["Defiance", "Guilt"], ["Longing", "Regret"]];
-    let chosenEmotion = { surface: pick(rng, EMOTIONS), core: pick(rng, EMOTIONS) };
-    if (isCohesive) {
-      const pair = pick(rng, curatedEmotionPairs);
-      chosenEmotion = { surface: pair[0], core: pair[1] };
-    }
-
     const newBp = {
       seed: seed,
       chaos: chaos,
@@ -95,17 +89,19 @@ const App = () => {
       createdAt: new Date().toISOString(),
 
       title: shouldLock('title') ? currentBp.title : `Project: ${pick(rng, TITLE_ADJ)} ${pick(rng, TITLE_NOUNS)}`,
+      premise: shouldLock('premise') ? currentBp.premise : pick(rng, PREMISES),
       genre: shouldLock('genre') ? currentBp.genre : primaryGenre,
       flavor: shouldLock('flavor') ? currentBp.flavor : secondaryGenre,
       music: shouldLock('music') ? currentBp.music : generateMusic(rng, chaos),
       inst: shouldLock('inst') ? currentBp.inst : pick(rng, INST),
+      earCandy: shouldLock('earCandy') ? currentBp.earCandy : pick(rng, EAR_CANDIES),
 
       pov: shouldLock('pov') ? currentBp.pov : pick(rng, POVS),
-      emotion: shouldLock('emotion') ? currentBp.emotion : chosenEmotion,
+      vibe: shouldLock('vibe') ? currentBp.vibe : pick(rng, EMOTIONS),
+      energy: shouldLock('energy') ? currentBp.energy : pick(rng, ENERGY_CONTOURS),
 
-      rhyme: shouldLock('rhyme') ? currentBp.rhyme : pick(rng, RHYME),
+      delivery: shouldLock('delivery') ? currentBp.delivery : pick(rng, DELIVERIES),
       vocal: shouldLock('vocal') ? currentBp.vocal : pick(rng, VOCAL_ARCHETYPES),
-      cadence: shouldLock('cadence') ? currentBp.cadence : pick(rng, CADENCES),
 
       structure: shouldLock('structure') ? currentBp.structure : pick(rng, STRUCTURES),
       twist: shouldLock('twist') ? currentBp.twist : pick(rng, TWISTS),
@@ -155,6 +151,58 @@ const App = () => {
     }
   };
 
+  const formatVocal = (v) => {
+    if (!v || !v.name) return String(v);
+    return `${v.name}\nVerse: ${v.verse}\nChorus: ${v.chorus}\nBridge: ${v.bridge}`;
+  };
+
+  const handleCopyText = async () => {
+    if (!currentBp) return showToast("Generate first! 🎲");
+    let text = `Blueprint: ${getVal('title', currentBp.title) || currentBp.seed}\n\n`;
+
+    if (enabled.premise !== false) text += `Premise: ${getVal('premise', currentBp.premise)}\n`;
+    if (enabled.genre !== false) text += `Main Genre: ${getVal('genre', currentBp.genre)}\n`;
+    if (enabled.flavor !== false) text += `Flavor: ${getVal('flavor', currentBp.flavor)}\n`;
+    if (enabled.music !== false) text += `BPM, Key & Scale: ${getVal('music', currentBp.music)}\n`;
+    if (enabled.inst !== false) text += `Instrumentation Palette: ${getVal('inst', currentBp.inst)}\n`;
+    if (enabled.earCandy !== false) text += `Signature Sound (Ear Candy): ${getVal('earCandy', currentBp.earCandy)}\n`;
+    if (enabled.pov !== false) text += `Narrative POV: ${getVal('pov', currentBp.pov)}\n`;
+    if (enabled.vibe !== false) text += `Emotional Core: ${getVal('vibe', currentBp.vibe)}\n`;
+    if (enabled.energy !== false) text += `Energy Contour: ${getVal('energy', currentBp.energy)}\n`;
+    if (enabled.delivery !== false) text += `Lyrical Delivery: ${getVal('delivery', currentBp.delivery)}\n`;
+    if (enabled.vocal !== false) text += `Vocal Tone: ${getVal('vocal', formatVocal(currentBp.vocal))}\n`;
+    if (enabled.twist !== false) text += `Plot Twist: ${getVal('twist', currentBp.twist)}\n`;
+
+    if (enabled.structure !== false) {
+      text += `\nStructure: ${currentBp.structure.name}\n`;
+      currentBp.structure.steps.forEach(step => {
+        text += `- ${step[0]} (${step[1]}): ${step[2]}\n`;
+      });
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast("Copied Text 📋");
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+      showToast("Copy failed! ❌");
+    }
+  };
+
+  const handleLockAll = () => {
+    const newLocks = {};
+    Object.keys(locks).forEach(k => newLocks[k] = true);
+    setLocks(newLocks);
+    showToast("Everything Locked 🔒");
+  };
+
+  const handleUnlockAll = () => {
+    const newLocks = {};
+    Object.keys(locks).forEach(k => newLocks[k] = false);
+    setLocks(newLocks);
+    showToast("Everything Unlocked 🔓");
+  };
+
   const getVal = (key, defaultVal) => {
     if (currentBp && currentBp.overrides && currentBp.overrides[key] !== undefined) {
       return currentBp.overrides[key];
@@ -182,7 +230,10 @@ const App = () => {
             <div className="row">
               <button className="primary" onClick={() => handleGenerate(false)}>🎲 Generate</button>
               <button className="small" onClick={handleSave}>💾 Save</button>
-              <button className="small" onClick={handleCopyJson}>� Copy JSON</button>
+              <button className="small" onClick={handleLockAll}>🔒 Lock All</button>
+              <button className="small" onClick={handleUnlockAll}>🔓 Unlock All</button>
+              <button className="small" onClick={handleCopyJson}>📋 JSON</button>
+              <button className="small" onClick={handleCopyText}>📝 Text</button>
             </div>
           </div>
 
@@ -210,41 +261,43 @@ const App = () => {
             >
 
               <div className="blueprint-section" style={{ borderColor: 'var(--accent-purple)', background: 'rgba(179,140,255,0.05)' }}>
-                <h3 style={{ color: 'var(--text)' }}>🏷️ The Blueprint Identity</h3>
+                <h3 style={{ color: 'var(--text)' }}>The Blueprint Identity</h3>
                 <div className="kv-grid">
                   <EditableKeyValue label="Working Title" value={getVal('title', currentBp.title)} lockKey="title" locks={locks} toggleLock={toggleLock} isEnabled={enabled.title} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Premise" value={getVal('premise', currentBp.premise)} lockKey="premise" locks={locks} toggleLock={toggleLock} isEnabled={enabled.premise} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                 </div>
               </div>
 
               <div className="blueprint-section">
-                <h3>🌌 The Vibe</h3>
+                <h3>The Vibe</h3>
                 <div className="kv-grid">
                   <EditableKeyValue label="Main Genre" value={getVal('genre', currentBp.genre)} lockKey="genre" locks={locks} toggleLock={toggleLock} isEnabled={enabled.genre} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                   <EditableKeyValue label="Flavor" value={getVal('flavor', currentBp.flavor)} lockKey="flavor" locks={locks} toggleLock={toggleLock} isEnabled={enabled.flavor} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                   <EditableKeyValue label="BPM, Key & Scale" value={getVal('music', currentBp.music)} lockKey="music" locks={locks} toggleLock={toggleLock} isEnabled={enabled.music} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                   <EditableKeyValue label="Instrumentation Palette" value={getVal('inst', currentBp.inst)} lockKey="inst" locks={locks} toggleLock={toggleLock} isEnabled={enabled.inst} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Signature Sound (Ear Candy)" value={getVal('earCandy', currentBp.earCandy)} lockKey="earCandy" locks={locks} toggleLock={toggleLock} isEnabled={enabled.earCandy} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                 </div>
               </div>
 
               <div className="blueprint-section">
-                <h3>🫀 The Core</h3>
+                <h3>The Core</h3>
                 <div className="kv-grid">
                   <EditableKeyValue label="Narrative POV" value={getVal('pov', currentBp.pov)} lockKey="pov" locks={locks} toggleLock={toggleLock} isEnabled={enabled.pov} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
-                  <EditableKeyValue label="Emotion (Surface / Core)" value={getVal('emotion', `${currentBp.emotion.surface} / ${currentBp.emotion.core}`)} lockKey="emotion" locks={locks} toggleLock={toggleLock} isEnabled={enabled.emotion} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Emotional Core" value={getVal('vibe', currentBp.vibe)} lockKey="vibe" locks={locks} toggleLock={toggleLock} isEnabled={enabled.vibe} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Energy Contour" value={getVal('energy', currentBp.energy)} lockKey="energy" locks={locks} toggleLock={toggleLock} isEnabled={enabled.energy} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                 </div>
               </div>
 
               <div className="blueprint-section">
-                <h3>🗣️ The Voice</h3>
+                <h3>The Voice</h3>
                 <div className="kv-grid">
-                  <EditableKeyValue label="Rhyme & Diction" value={getVal('rhyme', currentBp.rhyme)} lockKey="rhyme" locks={locks} toggleLock={toggleLock} isEnabled={enabled.rhyme} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
-                  <EditableKeyValue label="Vocal Tone" value={getVal('vocal', `${currentBp.vocal.name}\nVerse: ${currentBp.vocal.verse}\nChorus: ${currentBp.vocal.chorus}\nBridge: ${currentBp.vocal.bridge}`)} lockKey="vocal" locks={locks} toggleLock={toggleLock} isEnabled={enabled.vocal} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
-                  <EditableKeyValue label="Flow & Cadence" value={getVal('cadence', currentBp.cadence)} lockKey="cadence" locks={locks} toggleLock={toggleLock} isEnabled={enabled.cadence} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Lyrical Delivery" value={getVal('delivery', currentBp.delivery)} lockKey="delivery" locks={locks} toggleLock={toggleLock} isEnabled={enabled.delivery} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Vocal Tone" value={getVal('vocal', formatVocal(currentBp.vocal))} lockKey="vocal" locks={locks} toggleLock={toggleLock} isEnabled={enabled.vocal} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                 </div>
               </div>
 
               <div className="blueprint-section">
-                <h3>🃏 The Curveball</h3>
+                <h3>The Curveball</h3>
                 <div className="kv-grid">
                   <EditableKeyValue label="Plot Twist" value={getVal('twist', currentBp.twist)} lockKey="twist" locks={locks} toggleLock={toggleLock} isEnabled={enabled.twist} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                 </div>
@@ -252,7 +305,7 @@ const App = () => {
 
               <div className={`blueprint-section ${locks.structure ? 'locked' : ''} ${!enabled.structure ? 'disabled' : ''}`}>
                 <h3 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>🏗️ The Structure: {currentBp.structure.name}</span>
+                  <span>The Structure: {currentBp.structure.name}</span>
                   <div style={{ display: 'flex', gap: '4px' }}>
                     <ToggleButton isEnabled={enabled.structure} onToggle={() => toggleEnable('structure')} />
                     <LockButton isLocked={locks.structure} onToggle={() => toggleLock('structure')} />
