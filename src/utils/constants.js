@@ -1,6 +1,29 @@
 export const CORE_GENRE_STRING = "Pop,Hip-Hop,Trap,R&B,Neo-Soul,Country,Folk,Rock,Alt Rock,EDM,House,Metal,Punk,Emo,Jazz,Reggae,Gospel,Classical Crossover,Ska,Soul";
 export const CORE_GENRES = CORE_GENRE_STRING.split(",");
 
+export const GENRE_COLORS = {
+  "Pop": { main: "#ff8cd9", glow: "rgba(255, 140, 217, 0.2)" },
+  "Hip-Hop": { main: "#ffd37a", glow: "rgba(255, 211, 122, 0.2)" },
+  "Trap": { main: "#b38cff", glow: "rgba(179, 140, 255, 0.2)" },
+  "R&B": { main: "#ff6b88", glow: "rgba(255, 107, 136, 0.2)" },
+  "Neo-Soul": { main: "#ffa38c", glow: "rgba(255, 163, 140, 0.2)" },
+  "Country": { main: "#d4a373", glow: "rgba(212, 163, 115, 0.2)" },
+  "Folk": { main: "#a3b18a", glow: "rgba(163, 177, 138, 0.2)" },
+  "Rock": { main: "#ff4d4d", glow: "rgba(255, 77, 77, 0.2)" },
+  "Alt Rock": { main: "#9d4edd", glow: "rgba(157, 78, 221, 0.2)" },
+  "EDM": { main: "#00f2ff", glow: "rgba(0, 242, 255, 0.2)" },
+  "House": { main: "#70e000", glow: "rgba(112, 224, 0, 0.2)" },
+  "Metal": { main: "#666666", glow: "rgba(102, 102, 102, 0.2)" },
+  "Punk": { main: "#ff0040", glow: "rgba(255, 0, 64, 0.2)" },
+  "Emo": { main: "#480ca8", glow: "rgba(72, 12, 168, 0.2)" },
+  "Jazz": { main: "#ffb703", glow: "rgba(255, 183, 3, 0.2)" },
+  "Reggae": { main: "#fb8500", glow: "rgba(251, 133, 0, 0.2)" },
+  "Gospel": { main: "#ffea00", glow: "rgba(255, 234, 0, 0.2)" },
+  "Classical Crossover": { main: "#caf0f8", glow: "rgba(202, 240, 248, 0.2)" },
+  "Ska": { main: "#ffffff", glow: "rgba(255, 255, 255, 0.2)" },
+  "Soul": { main: "#f72585", glow: "rgba(247, 37, 133, 0.2)" }
+};
+
 export const FLAVOR_STRING = "Indie,Synthwave,Shoegaze,Dream Pop,Tech House,Drum & Bass,Darkwave,Hyperpop,City Pop,Cyberpunk,Space Rock,Post-Rock,Progressive,Psychedelic,Acoustic,Lo-Fi,Orchestral,Cinematic,Afrobeat,Amapiano,Baile Funk,Cumbia,Motown,Outlaw,G-Funk,Industrial,Sludge,Doom,Goth,Math,Pirate,Viking,Glitch,Future Bass,Tropical,Vaporwave,Chiptune,Baroque,Acid,Neo-Psychedelia,New Wave,No Wave,Swamp,Yacht,Ambient,Dark Ambient,Drone,Microhouse,Minimal,Neoclassical,Folktronica,Electro Swing";
 export const FLAVORS = FLAVOR_STRING.split(",");
 
@@ -23,7 +46,7 @@ export const STRUCTURES = [
   { name: "The Slow Burn Arc", steps: [["Intro", "Silence & Space", "Barely there instrumentation, intimate hushed vocal."], ["Verse 1", "Whispered truths", "Short lines, lots of empty space between phrases."], ["Verse 2", "Layering", "Drums enter softly, vocals gain a bit of confidence."], ["Bridge", "The simmer", "Repeating a mantra as instruments slowly swell in volume."], ["The Climax", "Wall of Sound", "Screamed or belted vocals, explosive drums, overwhelming emotion."], ["Outro", "Sudden cut", "Instantly drops back to total silence or a single held note."]] },
   { name: "Neo-Soul Groove", steps: [["Intro", "Vibe Check", "Complex chord progression, spoken word intro."], ["Verse 1", "Conversational", "Laid back delivery, floating slightly behind the beat."], ["Chorus", "Harmonic bliss", "Thick vocal stacks, smooth and jazzy."], ["Verse 2", "Playful", "More ad-libs, interactive interplay between vocal and bassline."], ["Vamp / Outro", "The Jam", "Repeating the chorus progression while the vocalist improvises runs and scat-sings to fade."]] },
   { name: "The Two-Part Suite (Beat Switch)", steps: [["Part 1: Verse", "Aggressive", "Fast tempo, attacking the beat, confrontational lyrics."], ["Part 1: Hook", "Hype", "Short, sharp, repetitive."], ["The Switch", "Transition", "Record scratch, beat suddenly slows down and gets moody/ambient."], ["Part 2: Verse", "Introspective", "Slower flow, vulnerable lyrics, looking inward."], ["Part 2: Outro", "Spoken Word", "A philosophical or reflective spoken outro over fading chords."]] }
-,
+  ,
   { name: "The Cinematic Trailer", steps: [["Act I", "The Setup", "High tension, sparse instrumentation, whispered vocals."], ["Sudden Silence", "The Breath", "One second of total quiet before the drop."], ["Act II", "The Escalation", "Rhythmic pulses, growing orchestra, staccato vocals."], ["The Impact", "The Peak", "Massive low-end hit, single powerful screamed word."], ["Act III", "The Resolution", "Long fading synth pad, one final breathy line."]] },
   { name: "Indie-Folk Stomp", steps: [["Verse 1", "Solo Journey", "Acoustic guitar and vocal only. Story-heavy."], ["Chorus", "The Gathering", "Handclaps and foot stomps join in. Group harmonies."], ["Verse 2", "The Travel", "Mandolin or banjo joins. Dynamic builds."], ["Chorus", "Full Band", "Drums and bass enter for a celebratory feel."], ["Bridge", "The Campfire", "Everything drops back to a single rhythmic clap."], ["Final Chorus", "Uplifting Conclusion", "Full energy, ends on a long sustained acoustic chord."]] },
   { name: "Dark Techno Loop", steps: [["Intro", "Filter Sweep", "Muffled kick drum slowly becoming clearer."], ["Cycle 1", "The Foundation", "Repetitive vocal hook, heavy sub-bass rhythmic pulse."], ["Cycle 2", "The Addition", "Industrial percussion layers added every 8 bars."], ["Breakdown", "Synthesized Tension", "Drums stop, white noise risers build for 16 bars."], ["The Peak", "The Release", "Full energy, distorted vocal chops, maximum volume."], ["Outro", "The Fade", "Stripping layers away until only the kick remains."]] },
@@ -39,12 +62,12 @@ export const STRUCTURES = [
 ];
 
 export const POVS = [
-  "The Direct Confession (First Person: I/You)", 
-  "The Storyteller (Third Person: He/She/They)", 
-  "The Unreliable Narrator (Lying to the listener/themselves)", 
-  "The Inner Monologue (Talking strictly to yourself)", 
-  "The Ghost (Singing from beyond the relationship or life)", 
-  "The Accuser (Second Person: Dictating exactly what they did)", 
+  "The Direct Confession (First Person: I/You)",
+  "The Storyteller (Third Person: He/She/They)",
+  "The Unreliable Narrator (Lying to the listener/themselves)",
+  "The Inner Monologue (Talking strictly to yourself)",
+  "The Ghost (Singing from beyond the relationship or life)",
+  "The Accuser (Second Person: Dictating exactly what they did)",
   "The Fly on the Wall (Detached, clinical, emotionless observation)",
   "The Inanimate Object (Singing from the perspective of a place or thing)",
   "The Collective We (Singing on behalf of a generation or group)",

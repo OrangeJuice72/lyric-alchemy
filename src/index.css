@@ -13,6 +13,17 @@
   --shadow: 0 30px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   --glow-purple: rgba(179, 140, 255, 0.2);
   --glow-gold: rgba(255, 211, 122, 0.15);
+  
+  /* Transition Helpers */
+  transition: --accent-purple 0.5s ease, --glow-purple 0.5s ease;
+}
+
+body {
+  transition: background-color 0.5s ease;
+}
+
+.primary, .blueprint-section, .v, .step-name, .toast {
+  transition: all 0.5s ease-out;
 }
 
 * {

@@ -4,7 +4,8 @@ import {
   CORE_GENRES, FLAVORS, POVS, EMOTIONS,
   PREMISES, EAR_CANDIES, ENERGY_CONTOURS, DELIVERIES,
   VOCAL_ARCHETYPES, TWISTS,
-  STRUCTURES, TITLE_ADJ, TITLE_NOUNS, INST
+  STRUCTURES, TITLE_ADJ, TITLE_NOUNS, INST,
+  GENRE_COLORS
 } from './utils/constants';
 import { makeRng, pick, generateMusic } from './utils/rng';
 import EditableKeyValue from './components/EditableKeyValue';
@@ -15,9 +16,12 @@ import ToggleButton from './components/ToggleButton';
 const App = () => {
   const [seedInput, setSeedInput] = useState("");
   const [chaos, setChaos] = useState(20);
-  const [currentBp, setCurrentBp] = useState(null);
+  const [batch, setBatch] = useState([]);
+  const [batchIdx, setBatchIdx] = useState(0);
   const [saves, setSaves] = useState([]);
   const [toastMsg, setToastMsg] = useState({ text: "", visible: false });
+
+  const currentBp = batch[batchIdx] || null;
 
   const [locks, setLocks] = useState({
     title: false, premise: false, genre: false, flavor: false, music: false, inst: false, earCandy: false, pov: false, vibe: false, energy: false,
@@ -40,10 +44,12 @@ const App = () => {
   };
 
   const handleOverrideSave = (key, customText) => {
-    setCurrentBp(prev => ({
-      ...prev,
-      overrides: { ...(prev.overrides || {}), [key]: customText }
-    }));
+    const newBatch = [...batch];
+    newBatch[batchIdx] = {
+      ...currentBp,
+      overrides: { ...(currentBp.overrides || {}), [key]: customText }
+    };
+    setBatch(newBatch);
     setLocks(prev => ({ ...prev, [key]: true }));
     showToast("Custom edit locked! 🔒✨");
   };
@@ -52,64 +58,83 @@ const App = () => {
     const newSteps = [...currentBp.structure.steps];
     newSteps[stepIndex] = [newSteps[stepIndex][0], newSteps[stepIndex][1], newDesc];
 
-    setCurrentBp(prev => ({
-      ...prev,
-      structure: { ...prev.structure, steps: newSteps }
-    }));
+    const newBatch = [...batch];
+    newBatch[batchIdx] = {
+      ...currentBp,
+      structure: { ...currentBp.structure, steps: newSteps }
+    };
+    setBatch(newBatch);
     setLocks(prev => ({ ...prev, structure: true }));
     showToast("Structure edit locked! 🔒✨");
   };
 
+  // Dynamic Color Sync
+  useEffect(() => {
+    if (currentBp && currentBp.genre) {
+      const colors = GENRE_COLORS[currentBp.genre] || { main: "#b38cff", glow: "rgba(179, 140, 255, 0.2)" };
+      document.documentElement.style.setProperty('--accent-purple', colors.main);
+      document.documentElement.style.setProperty('--glow-purple', colors.glow);
+    }
+  }, [currentBp]);
 
 
-  const handleGenerate = (isInitial = false) => {
-    const { seed, rand } = makeRng(seedInput);
-    const rng = { seed, rand };
 
-    const shouldLock = (key) => !isInitial && currentBp && locks[key];
+  const handleGenerate = (count = 1, isInitial = false) => {
+    const { seed: baseSeed, rand: baseRand } = makeRng(seedInput);
+    const newBatchItems = [];
 
-    const activeOverrides = {};
-    if (!isInitial && currentBp && currentBp.overrides) {
-      Object.keys(currentBp.overrides).forEach(k => {
-        if (locks[k]) activeOverrides[k] = currentBp.overrides[k];
-      });
+    for (let i = 0; i < count; i++) {
+      const currentSeed = count > 1 ? `${baseSeed}-${i + 1}` : baseSeed;
+      const { seed, rand } = makeRng(currentSeed);
+      const rng = { seed, rand };
+
+      const shouldLock = (key) => !isInitial && currentBp && locks[key];
+
+      const activeOverrides = {};
+      if (!isInitial && currentBp && currentBp.overrides) {
+        Object.keys(currentBp.overrides).forEach(k => {
+          if (locks[k]) activeOverrides[k] = currentBp.overrides[k];
+        });
+      }
+
+      const isCohesive = (rng.rand() * 100) > chaos;
+
+      const safeCoreGenres = CORE_GENRES;
+      const safeFlavors = FLAVORS.slice(0, 30);
+      let primaryGenre = pick(rng, CORE_GENRES);
+      let secondaryGenre = isCohesive ? pick(rng, safeFlavors) : pick(rng, FLAVORS);
+
+      const newBp = {
+        seed: seed,
+        chaos: chaos,
+        mode: chaos <= 25 ? "Studio" : chaos <= 60 ? "Hybrid" : "Experimental",
+        createdAt: new Date().toISOString(),
+
+        title: shouldLock('title') ? currentBp.title : `Project: ${pick(rng, TITLE_ADJ)} ${pick(rng, TITLE_NOUNS)}`,
+        premise: shouldLock('premise') ? currentBp.premise : pick(rng, PREMISES),
+        genre: shouldLock('genre') ? currentBp.genre : primaryGenre,
+        flavor: shouldLock('flavor') ? currentBp.flavor : secondaryGenre,
+        music: shouldLock('music') ? currentBp.music : generateMusic(rng, chaos),
+        inst: shouldLock('inst') ? currentBp.inst : pick(rng, INST),
+        earCandy: shouldLock('earCandy') ? currentBp.earCandy : pick(rng, EAR_CANDIES),
+
+        pov: shouldLock('pov') ? currentBp.pov : pick(rng, POVS),
+        vibe: shouldLock('vibe') ? currentBp.vibe : pick(rng, EMOTIONS),
+        energy: shouldLock('energy') ? currentBp.energy : pick(rng, ENERGY_CONTOURS),
+
+        delivery: shouldLock('delivery') ? currentBp.delivery : pick(rng, DELIVERIES),
+        vocal: shouldLock('vocal') ? currentBp.vocal : pick(rng, VOCAL_ARCHETYPES),
+
+        structure: shouldLock('structure') ? currentBp.structure : pick(rng, STRUCTURES),
+        twist: shouldLock('twist') ? currentBp.twist : pick(rng, TWISTS),
+
+        overrides: activeOverrides
+      };
+      newBatchItems.push(newBp);
     }
 
-    const isCohesive = (rng.rand() * 100) > chaos;
-
-    const safeCoreGenres = CORE_GENRES;
-    const safeFlavors = FLAVORS.slice(0, 30);
-    let primaryGenre = pick(rng, CORE_GENRES);
-    let secondaryGenre = isCohesive ? pick(rng, safeFlavors) : pick(rng, FLAVORS);
-
-    const newBp = {
-      seed: seed,
-      chaos: chaos,
-      mode: chaos <= 25 ? "Studio" : chaos <= 60 ? "Hybrid" : "Experimental",
-      createdAt: new Date().toISOString(),
-
-      title: shouldLock('title') ? currentBp.title : `Project: ${pick(rng, TITLE_ADJ)} ${pick(rng, TITLE_NOUNS)}`,
-      premise: shouldLock('premise') ? currentBp.premise : pick(rng, PREMISES),
-      genre: shouldLock('genre') ? currentBp.genre : primaryGenre,
-      flavor: shouldLock('flavor') ? currentBp.flavor : secondaryGenre,
-      music: shouldLock('music') ? currentBp.music : generateMusic(rng, chaos),
-      inst: shouldLock('inst') ? currentBp.inst : pick(rng, INST),
-      earCandy: shouldLock('earCandy') ? currentBp.earCandy : pick(rng, EAR_CANDIES),
-
-      pov: shouldLock('pov') ? currentBp.pov : pick(rng, POVS),
-      vibe: shouldLock('vibe') ? currentBp.vibe : pick(rng, EMOTIONS),
-      energy: shouldLock('energy') ? currentBp.energy : pick(rng, ENERGY_CONTOURS),
-
-      delivery: shouldLock('delivery') ? currentBp.delivery : pick(rng, DELIVERIES),
-      vocal: shouldLock('vocal') ? currentBp.vocal : pick(rng, VOCAL_ARCHETYPES),
-
-      structure: shouldLock('structure') ? currentBp.structure : pick(rng, STRUCTURES),
-      twist: shouldLock('twist') ? currentBp.twist : pick(rng, TWISTS),
-
-      overrides: activeOverrides
-    };
-
-    setCurrentBp(newBp);
+    setBatch(newBatchItems);
+    setBatchIdx(0);
   };
 
   useEffect(() => {
@@ -130,8 +155,42 @@ const App = () => {
   };
 
   const handleLoad = (bp) => {
-    setCurrentBp(bp); setSeedInput(bp.seed); setChaos(bp.chaos);
+    setBatch([bp]);
+    setBatchIdx(0);
+    setSeedInput(bp.seed);
+    setChaos(bp.chaos);
     showToast("Loaded blueprint 📥");
+  };
+
+  const handleCopyPrompt = async () => {
+    if (!currentBp) return showToast("Generate first! 🎲");
+    const title = getVal('title', currentBp.title);
+    const genre = getVal('genre', currentBp.genre);
+    const flavor = getVal('flavor', currentBp.flavor);
+    const tone = getVal('vibe', currentBp.vibe);
+    const vocal = currentBp.vocal.name;
+    const premise = getVal('premise', currentBp.premise);
+    const delivery = getVal('delivery', currentBp.delivery);
+    const twist = getVal('twist', currentBp.twist);
+
+    const prompt = `Write a song titled "${title}". 
+Genre: ${genre} (${flavor} style). 
+Emotional Core: ${tone}. 
+Vocal Style: ${vocal}.
+Lyrical Delivery: ${delivery}.
+Core Premise: ${premise}.
+Plot Twist to include: ${twist}.
+Structure: ${currentBp.structure.name}.
+Follow the instructions for each section:
+${currentBp.structure.steps.map(s => `- ${s[0]} (${s[1]}): ${s[2]}`).join('\n')}
+Make the lyrics evocative, avoid cliches, and focus on concrete imagery.`;
+
+    try {
+      await navigator.clipboard.writeText(prompt);
+      showToast("Copied Master Prompt 🧠");
+    } catch (err) {
+      showToast("Copy failed! ❌");
+    }
   };
 
   const handleCopyJson = async () => {
@@ -226,12 +285,23 @@ const App = () => {
       <div className="grid">
         <section className="glass-panel">
           <div className="card-hd">
-            <h2>Studio Generator</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <h2>Studio Generator</h2>
+              {batch.length > 1 && (
+                <div className="pill" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--accent-purple)' }}>
+                  <button className="lock-btn" onClick={() => setBatchIdx(prev => Math.max(0, prev - 1))} disabled={batchIdx === 0}>◀</button>
+                  <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{batchIdx + 1} / {batch.length}</span>
+                  <button className="lock-btn" onClick={() => setBatchIdx(prev => Math.min(batch.length - 1, prev + 1))} disabled={batchIdx === batch.length - 1}>▶</button>
+                </div>
+              )}
+            </div>
             <div className="row">
-              <button className="primary" onClick={() => handleGenerate(false)}>🎲 Generate</button>
+              <button className="primary" onClick={() => handleGenerate(1, false)}>🎲 Generate</button>
+              <button className="primary" style={{ background: 'linear-gradient(135deg, var(--accent-gold), #ffb703)', color: '#000' }} onClick={() => handleGenerate(3, false)}>🎲 Gen 3</button>
               <button className="small" onClick={handleSave}>💾 Save</button>
               <button className="small" onClick={handleLockAll}>🔒 Lock All</button>
               <button className="small" onClick={handleUnlockAll}>🔓 Unlock All</button>
+              <button className="small" style={{ borderColor: 'var(--accent-gold)', color: 'var(--accent-gold)' }} onClick={handleCopyPrompt}>🧠 Copy Prompt</button>
               <button className="small" onClick={handleCopyJson}>📋 JSON</button>
               <button className="small" onClick={handleCopyText}>📝 Text</button>
             </div>
