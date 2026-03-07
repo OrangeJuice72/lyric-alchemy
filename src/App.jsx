@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  GENRES, TOPICS, POVS, EMOTIONS, IMAGERY, RHYME,
-  VOCAL_ARCHETYPES, CADENCES, TWISTS, FORBIDDEN,
+  GENRES, POVS, EMOTIONS, RHYME,
+  VOCAL_ARCHETYPES, CADENCES, TWISTS,
   STRUCTURES, TITLE_ADJ, TITLE_NOUNS, INST
 } from './utils/constants';
 import { makeRng, pick, generateMusic } from './utils/rng';
@@ -19,15 +19,15 @@ const App = () => {
   const [toastMsg, setToastMsg] = useState({ text: "", visible: false });
 
   const [locks, setLocks] = useState({
-    title: false, genres: false, music: false, inst: false, topic: false, pov: false, emotion: false,
-    imagery: false, rhyme: false, vocal: false, cadence: false,
-    twist: false, constraint: false, structure: false
+    title: false, genre: false, flavor: false, music: false, inst: false, pov: false, emotion: false,
+    rhyme: false, vocal: false, cadence: false,
+    twist: false, structure: false
   });
 
   const [enabled, setEnabled] = useState({
-    title: true, genres: true, music: true, inst: true, topic: true, pov: true, emotion: true,
-    imagery: true, rhyme: true, vocal: true, cadence: true,
-    twist: true, constraint: true, structure: true
+    title: true, genre: true, flavor: true, music: true, inst: true, pov: true, emotion: true,
+    rhyme: true, vocal: true, cadence: true,
+    twist: true, structure: true
   });
 
   const toggleLock = (key) => setLocks(prev => ({ ...prev, [key]: !prev[key] }));
@@ -95,14 +95,13 @@ const App = () => {
       createdAt: new Date().toISOString(),
 
       title: shouldLock('title') ? currentBp.title : `Project: ${pick(rng, TITLE_ADJ)} ${pick(rng, TITLE_NOUNS)}`,
-      genres: shouldLock('genres') ? currentBp.genres : { primary: primaryGenre, secondary: secondaryGenre },
+      genre: shouldLock('genre') ? currentBp.genre : primaryGenre,
+      flavor: shouldLock('flavor') ? currentBp.flavor : secondaryGenre,
       music: shouldLock('music') ? currentBp.music : generateMusic(rng, chaos),
       inst: shouldLock('inst') ? currentBp.inst : pick(rng, INST),
 
-      topic: shouldLock('topic') ? currentBp.topic : pick(rng, TOPICS),
       pov: shouldLock('pov') ? currentBp.pov : pick(rng, POVS),
       emotion: shouldLock('emotion') ? currentBp.emotion : chosenEmotion,
-      imagery: shouldLock('imagery') ? currentBp.imagery : pick(rng, IMAGERY),
 
       rhyme: shouldLock('rhyme') ? currentBp.rhyme : pick(rng, RHYME),
       vocal: shouldLock('vocal') ? currentBp.vocal : pick(rng, VOCAL_ARCHETYPES),
@@ -110,7 +109,6 @@ const App = () => {
 
       structure: shouldLock('structure') ? currentBp.structure : pick(rng, STRUCTURES),
       twist: shouldLock('twist') ? currentBp.twist : pick(rng, TWISTS),
-      constraint: shouldLock('constraint') ? currentBp.constraint : pick(rng, FORBIDDEN),
 
       overrides: activeOverrides
     };
@@ -140,7 +138,7 @@ const App = () => {
     showToast("Loaded blueprint 📥");
   };
 
-  const handleExport = () => {
+  const handleCopyJson = async () => {
     if (!currentBp) return showToast("Generate first! 🎲");
     const exportData = {};
     Object.keys(currentBp).forEach(key => {
@@ -148,14 +146,13 @@ const App = () => {
         exportData[key] = currentBp[key];
       }
     });
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `LyricAlchemy_${currentBp.seed}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast("Exported JSON 📤");
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(exportData, null, 2));
+      showToast("Copied JSON 📋");
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+      showToast("Copy failed! ❌");
+    }
   };
 
   const getVal = (key, defaultVal) => {
@@ -185,7 +182,7 @@ const App = () => {
             <div className="row">
               <button className="primary" onClick={() => handleGenerate(false)}>🎲 Generate</button>
               <button className="small" onClick={handleSave}>💾 Save</button>
-              <button className="small" onClick={handleExport}>📤 Export JSON</button>
+              <button className="small" onClick={handleCopyJson}>� Copy JSON</button>
             </div>
           </div>
 
@@ -222,7 +219,8 @@ const App = () => {
               <div className="blueprint-section">
                 <h3>🌌 The Vibe</h3>
                 <div className="kv-grid">
-                  <EditableKeyValue label="Genres" value={getVal('genres', `${currentBp.genres.primary} + ${currentBp.genres.secondary} (Flavor)`)} lockKey="genres" locks={locks} toggleLock={toggleLock} isEnabled={enabled.genres} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Main Genre" value={getVal('genre', currentBp.genre)} lockKey="genre" locks={locks} toggleLock={toggleLock} isEnabled={enabled.genre} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Flavor" value={getVal('flavor', currentBp.flavor)} lockKey="flavor" locks={locks} toggleLock={toggleLock} isEnabled={enabled.flavor} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                   <EditableKeyValue label="BPM, Key & Scale" value={getVal('music', currentBp.music)} lockKey="music" locks={locks} toggleLock={toggleLock} isEnabled={enabled.music} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                   <EditableKeyValue label="Instrumentation Palette" value={getVal('inst', currentBp.inst)} lockKey="inst" locks={locks} toggleLock={toggleLock} isEnabled={enabled.inst} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                 </div>
@@ -231,10 +229,8 @@ const App = () => {
               <div className="blueprint-section">
                 <h3>🫀 The Core</h3>
                 <div className="kv-grid">
-                  <EditableKeyValue label="Topic" value={getVal('topic', currentBp.topic)} lockKey="topic" locks={locks} toggleLock={toggleLock} isEnabled={enabled.topic} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                   <EditableKeyValue label="Narrative POV" value={getVal('pov', currentBp.pov)} lockKey="pov" locks={locks} toggleLock={toggleLock} isEnabled={enabled.pov} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                   <EditableKeyValue label="Emotion (Surface / Core)" value={getVal('emotion', `${currentBp.emotion.surface} / ${currentBp.emotion.core}`)} lockKey="emotion" locks={locks} toggleLock={toggleLock} isEnabled={enabled.emotion} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
-                  <EditableKeyValue label="Imagery Theme" value={getVal('imagery', currentBp.imagery)} lockKey="imagery" locks={locks} toggleLock={toggleLock} isEnabled={enabled.imagery} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                 </div>
               </div>
 
@@ -248,10 +244,9 @@ const App = () => {
               </div>
 
               <div className="blueprint-section">
-                <h3>🃏 The Curveball & Constraints</h3>
+                <h3>🃏 The Curveball</h3>
                 <div className="kv-grid">
                   <EditableKeyValue label="Plot Twist" value={getVal('twist', currentBp.twist)} lockKey="twist" locks={locks} toggleLock={toggleLock} isEnabled={enabled.twist} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
-                  <EditableKeyValue label="Forbidden Words" value={getVal('constraint', currentBp.constraint)} lockKey="constraint" locks={locks} toggleLock={toggleLock} isEnabled={enabled.constraint} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                 </div>
               </div>
 
@@ -307,7 +302,7 @@ const App = () => {
                       >
                         <div className="fav-title" style={{ color: 'var(--accent-gold)' }}>{title}</div>
                         <div className="fav-meta">
-                          <span>{bp.genres.primary} / {bp.genres.secondary}</span><br />
+                          <span>{bp.genres ? `${bp.genres.primary} / ${bp.genres.secondary}` : `${bp.genre} / ${bp.flavor}`}</span><br />
                           <span>Seed: {bp.seed}</span>
                         </div>
                         <div className="fav-actions">
