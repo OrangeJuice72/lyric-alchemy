@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  GENRES, POVS, EMOTIONS, RHYME,
+  CORE_GENRES, FLAVORS, POVS, EMOTIONS, RHYME,
   VOCAL_ARCHETYPES, CADENCES, TWISTS,
   STRUCTURES, TITLE_ADJ, TITLE_NOUNS, INST
 } from './utils/constants';
@@ -76,10 +76,10 @@ const App = () => {
 
     const isCohesive = (rng.rand() * 100) > chaos;
 
-    const safeGenres = GENRES.slice(0, 30);
-    let primaryGenre = isCohesive ? pick(rng, safeGenres) : pick(rng, GENRES);
-    let secondaryGenre = isCohesive ? pick(rng, safeGenres) : pick(rng, GENRES);
-    if (primaryGenre === secondaryGenre) secondaryGenre = pick(rng, GENRES);
+    const safeCoreGenres = CORE_GENRES;
+    const safeFlavors = FLAVORS.slice(0, 30);
+    let primaryGenre = pick(rng, CORE_GENRES);
+    let secondaryGenre = isCohesive ? pick(rng, safeFlavors) : pick(rng, FLAVORS);
 
     const curatedEmotionPairs = [["Confidence", "Insecurity"], ["Nostalgia", "Resentment"], ["Hope", "Fear"], ["Relief", "Grief"], ["Tenderness", "Jealousy"], ["Calm", "Restlessness"], ["Defiance", "Guilt"], ["Longing", "Regret"]];
     let chosenEmotion = { surface: pick(rng, EMOTIONS), core: pick(rng, EMOTIONS) };
