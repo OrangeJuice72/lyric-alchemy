@@ -314,6 +314,28 @@ export const INST = [
   "A cheerful ukulele, handclaps, and an upright bass",
   "A massive choir chanting in Latin over a doom metal riff"
 ];
+export const RHYME_STYLES = [
+  "Perfect Rhyme (exact vowel/consonant match, e.g., 'Sight/Light')",
+  "Slant Rhyme (near match, e.g., 'Bridge/Grudge' or 'Young/Song')",
+  "Eye Rhyme (looks similar, sounds different, e.g., 'Move/Love')",
+  "Identical Rhyme (same word, different meaning or context)",
+  "Rich Rhyme (homonyms, e.g., 'Raise/Raze' or 'Blue/Blew')",
+  "Internal Rhyme (rhyming within the same line)",
+  "Multisyllabic Rhyme (complex multi-syllable matching, e.g., 'Fearless/Peerless')",
+  "Broken Rhyme (splitting a word across lines to force a rhyme)",
+  "Mosaic Rhyme (rhyming a multi-word phrase with a single word)",
+  "Alliteration (repetition of initial consonant sounds)",
+  "Assonance (repetition of internal vowel sounds, e.g., 'Deep/Feel')",
+  "Consonance (repetition of final consonant sounds, e.g., 'Sent/Went')",
+  "Masculine Rhyme (stressed final syllable, e.g., 'Hold/Gold')",
+  "Feminine Rhyme (stressed second-to-last syllable, e.g., 'Dicing/Enticing')",
+  "Triple Rhyme (three-syllable match, e.g., 'Victorious/Glorious')",
+  "Holorhyme (entire lines rhyming with each other)",
+  "Para-rhyme (consonant frames matching, e.g., 'Hall/Hell')",
+  "Half Rhyme (only final consonants match, e.g., 'Soul/All')",
+  "Light Rhyme (stressed syllable rhyming with an unstressed one)",
+  "Semirhyme (a one-syllable word rhyming with two, e.g., 'Move/Movie')"
+];
 export const FORBIDDEN = ["Love, Heart, Baby, Cry, Tonight", "Girl, Boy, World, Fire, Desire", "Yeah, Oh, Stop, Go, Time", "Tears, Years, Fears, Eyes, Lies", "Walk, Talk, Sleep, Weep, Deep", "Sun, Moon, Stars, Sky, Fly", "Forever, Never, Always, Please, Down", "Crazy, Hazy, Night, Light, Right", "Sad, Mad, Glad, Bad, Good", "Alone, Home, Phone, Stone, Bone"];
 export const TITLE_ADJ = ["Neon", "Hollow", "Midnight", "Static", "Velvet", "Fading", "Golden", "Broken", "Silent", "Bitter", "Savage", "Crimson", "Electric", "Restless", "Suburban", "Plastic", "Ghostly", "Tangled", "Heavy"];
 export const TITLE_NOUNS = ["Regret", "Echoes", "Bones", "Shadows", "Wires", "Hearts", "Ghosts", "Whispers", "Sunsets", "Tears", "Strangers", "Skies", "Mirrors", "Nights", "Lies", "Promises", "Cigarettes", "Memories"];

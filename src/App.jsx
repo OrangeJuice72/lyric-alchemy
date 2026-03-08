@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   CORE_GENRES, FLAVORS, POVS, EMOTIONS,
   PREMISES, EAR_CANDIES, ENERGY_CONTOURS, DELIVERIES,
-  VOCAL_ARCHETYPES, TWISTS,
+  VOCAL_ARCHETYPES, TWISTS, RHYME_STYLES,
   STRUCTURES, TITLE_ADJ, TITLE_NOUNS, INST,
   GENRE_COLORS
 } from './utils/constants';
@@ -25,13 +25,13 @@ const App = () => {
 
   const [locks, setLocks] = useState({
     title: false, premise: false, genre: false, flavor: false, music: false, inst: false, earCandy: false, pov: false, vibe: false, energy: false,
-    delivery: false, vocal: false,
+    delivery: false, vocal: false, rhymeStyle: false,
     twist: false, structure: false
   });
 
   const [enabled, setEnabled] = useState({
     title: true, premise: true, genre: true, flavor: true, music: true, inst: true, earCandy: true, pov: true, vibe: true, energy: true,
-    delivery: true, vocal: true,
+    delivery: true, vocal: true, rhymeStyle: true,
     twist: true, structure: true
   });
 
@@ -124,6 +124,7 @@ const App = () => {
 
         delivery: shouldLock('delivery') ? currentBp.delivery : pick(rng, DELIVERIES),
         vocal: shouldLock('vocal') ? currentBp.vocal : pick(rng, VOCAL_ARCHETYPES),
+        rhymeStyle: shouldLock('rhymeStyle') ? currentBp.rhymeStyle : pick(rng, RHYME_STYLES),
 
         structure: shouldLock('structure') ? currentBp.structure : pick(rng, STRUCTURES),
         twist: shouldLock('twist') ? currentBp.twist : pick(rng, TWISTS),
@@ -171,6 +172,7 @@ const App = () => {
     const vocal = currentBp.vocal.name;
     const premise = getVal('premise', currentBp.premise);
     const delivery = getVal('delivery', currentBp.delivery);
+    const rhymeStyle = getVal('rhymeStyle', currentBp.rhymeStyle);
     const twist = getVal('twist', currentBp.twist);
 
     const prompt = `Write a song titled "${title}". 
@@ -178,6 +180,7 @@ Genre: ${genre} (${flavor} style).
 Emotional Core: ${tone}. 
 Vocal Style: ${vocal}.
 Lyrical Delivery: ${delivery}.
+Rhyme Style: ${rhymeStyle}.
 Core Premise: ${premise}.
 Plot Twist to include: ${twist}.
 Structure: ${currentBp.structure.name}.
@@ -230,6 +233,7 @@ Make the lyrics evocative, avoid cliches, and focus on concrete imagery.`;
     if (enabled.energy !== false) text += `Energy Contour: ${getVal('energy', currentBp.energy)}\n`;
     if (enabled.delivery !== false) text += `Lyrical Delivery: ${getVal('delivery', currentBp.delivery)}\n`;
     if (enabled.vocal !== false) text += `Vocal Tone: ${getVal('vocal', formatVocal(currentBp.vocal))}\n`;
+    if (enabled.rhymeStyle !== false) text += `Rhyme Style: ${getVal('rhymeStyle', currentBp.rhymeStyle)}\n`;
     if (enabled.twist !== false) text += `Plot Twist: ${getVal('twist', currentBp.twist)}\n`;
 
     if (enabled.structure !== false) {
@@ -363,6 +367,7 @@ Make the lyrics evocative, avoid cliches, and focus on concrete imagery.`;
                 <div className="kv-grid">
                   <EditableKeyValue label="Lyrical Delivery" value={getVal('delivery', currentBp.delivery)} lockKey="delivery" locks={locks} toggleLock={toggleLock} isEnabled={enabled.delivery} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                   <EditableKeyValue label="Vocal Tone" value={getVal('vocal', formatVocal(currentBp.vocal))} lockKey="vocal" locks={locks} toggleLock={toggleLock} isEnabled={enabled.vocal} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
+                  <EditableKeyValue label="Rhyme Style" value={getVal('rhymeStyle', currentBp.rhymeStyle)} lockKey="rhymeStyle" locks={locks} toggleLock={toggleLock} isEnabled={enabled.rhymeStyle} toggleEnable={toggleEnable} onEditSave={handleOverrideSave} />
                 </div>
               </div>
 
